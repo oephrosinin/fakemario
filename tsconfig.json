@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "outDir": "./lib",
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": true,
+    "noEmitOnError": true,
+    "module": "commonjs",
+    "target": "es5",
+    "jsx": "react",
+    "removeComments": false,
+    "allowJs": false,
+    "lib": [
+      "dom",
+      "es2015",
+      "es5",
+      "es6",
+      "es7"
+    ]
+  },
+  "awesomeTypescriptLoaderOptions": {
+    "transpileOnly": false
+  }
+}
