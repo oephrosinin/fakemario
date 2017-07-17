@@ -1,0 +1,27 @@
+// application variables
+@import "local_variables";
+// Components
+@import "head";
+@import "footer";
+@import "mario";
+
+body, html {
+  margin: 0;
+  height: 100%;
+}
+
+#main {
+  position: relative;
+  width: $game-width;
+  height: $game-height;
+}
+
+.game-wrapper {
+  height: 100%;
+  position: relative;
+  
+  .header, .footer {
+    padding: 0 10%;
+    position: relative;
+  }
+}

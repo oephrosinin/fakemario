@@ -1,0 +1,8 @@
+.person-block {
+  bottom: 0;
+  position: absolute;
+  //position: relative;
+  width: $character-width;
+  height: $character-height;
+  background-color: $character-color;
+}

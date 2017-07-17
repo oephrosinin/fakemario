@@ -1,6 +1,6 @@
-# Mission Control
+# FakeMario Game
 
-This is a the mission control component ('/cabinDispatch').
+This is a simple game
 
 ## Installation
 ```
@@ -17,8 +17,8 @@ npm start
 
 ## Technologies used
 
-- React
+- React, Webpack
 
 ## Functionality
 
-Shows the mission control page content.
+Just simple movements and stages

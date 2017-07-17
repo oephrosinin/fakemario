@@ -9541,6 +9541,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(50);
+var character_1 = __webpack_require__(185);
 var Content = (function (_super) {
     __extends(Content, _super);
     function Content(props) {
@@ -9554,7 +9555,9 @@ var Content = (function (_super) {
     };
     Content.prototype.render = function () {
         return (React.createElement("div", { className: "game-wrapper" },
-            React.createElement("div", { className: "header" }, "this is header"),
+            React.createElement("div", { className: "header" },
+                "this is header1",
+                React.createElement(character_1.default, null)),
             React.createElement("div", { className: "footer" }, "this is floor")));
     };
     return Content;
@@ -22081,6 +22084,179 @@ function traverseAllChildren(children, callback, traverseContext) {
 
 module.exports = traverseAllChildren;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
+
+/***/ }),
+/* 185 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(50);
+var constants_1 = __webpack_require__(186);
+var Character = (function (_super) {
+    __extends(Character, _super);
+    function Character(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = {
+            speed: 0,
+            position: 0,
+            direction: null,
+        };
+        return _this;
+    }
+    Character.prototype.componentDidMount = function () {
+        this._applyMoves();
+    };
+    Character.prototype.componentWillUnmount = function () {
+        //
+    };
+    Character.prototype.render = function () {
+        var _a = this.state, position = _a.position, speed = _a.speed;
+        console.log('position', position, 'speed', speed);
+        return (React.createElement("div", { className: "person-block", ref: "mario", style: { left: position } }, "mario"));
+    };
+    Character.prototype._clearBreakingInterval = function () {
+        if (this.breakingInterval) {
+            clearInterval(this.breakingInterval);
+        }
+    };
+    Character.prototype._clearMovingInterval = function () {
+        if (this.movingInterval) {
+            clearInterval(this.movingInterval);
+        }
+    };
+    Character.prototype._isStopped = function () {
+        return this.state.speed === 0;
+    };
+    Character.prototype._decreaseSpeed = function (newDirection) {
+        if (newDirection === void 0) { newDirection = this.state.direction; }
+        var _a = this.state, speed = _a.speed, direction = _a.direction;
+        if (!speed) {
+            speed = constants_1.TOUCH_ACCELERATION;
+        }
+        if (speed <= constants_1.TOUCH_BRAKING) {
+            speed = 0;
+        }
+        else {
+            speed -= constants_1.TOUCH_BRAKING;
+        }
+        if (speed === 0) {
+            // Check and try to clear interval
+            this._clearBreakingInterval();
+            direction = newDirection;
+        }
+        console.log('_decreaseSpeed', speed, direction, this.state.direction);
+        this.setState({ speed: speed, direction: direction });
+    };
+    Character.prototype._increaseSpeed = function () {
+        var speed = this.state.speed;
+        if (!speed || speed < constants_1.MAX_SPEED - constants_1.TOUCH_ACCELERATION) {
+            speed += constants_1.TOUCH_ACCELERATION;
+        }
+        else {
+            speed = constants_1.MAX_SPEED;
+            console.log('max speed, sonne', speed);
+        }
+        // console.log('_increaseSpeed', speed);
+        this.setState({ speed: speed });
+    };
+    Character.prototype._applyAccelerationTouch = function (direction) {
+        if (direction === void 0) { direction = 'ahead'; }
+        if (!this.lastMove || this.lastMove === direction || this._isStopped()) {
+            // speed += TOUCH_ACCELERATION;
+            this._increaseSpeed();
+            return this.lastMove = direction;
+        }
+        // Decrease speed
+        return this._decreaseSpeed(direction);
+    };
+    Character.prototype._applySimpleTimer = function () {
+        var _this = this;
+        if (this.moveBreakTimer) {
+            console.log('cleaned interval');
+            clearTimeout(this.moveBreakTimer);
+        }
+        this.moveBreakTimer = setTimeout(function () {
+            _this._decreaseSpeed();
+            // Apply break
+            _this.breakingInterval = setInterval(function () {
+                if (_this._isStopped()) {
+                    _this._clearBreakingInterval();
+                }
+                else {
+                    _this._decreaseSpeed();
+                }
+            }, 25);
+        }, constants_1.KEY_PRESS_DELAY);
+    };
+    Character.prototype._moveAhead = function () {
+        // console.log('move ahead');
+        this._applyAccelerationTouch('ahead');
+        this._applySimpleTimer();
+    };
+    Character.prototype._moveBack = function () {
+        // console.log('move back');
+        this._applyAccelerationTouch('back');
+        this._applySimpleTimer();
+    };
+    Character.prototype._jump = function () {
+        console.log('jump');
+    };
+    Character.prototype._applyMoves = function () {
+        var _this = this;
+        document.onkeydown = (function (_a) {
+            var key = _a.key;
+            switch (key) {
+                case 'ArrowUp':
+                    return _this._jump();
+                case 'ArrowLeft':
+                    return _this._moveBack();
+                case 'ArrowRight':
+                    return _this._moveAhead();
+            }
+        });
+        if (!this._isStopped()) {
+            var position_1 = this.state.position;
+            setInterval(function () {
+                var delta = _this.state.speed / (1000 / constants_1.BRAKING_DELAY);
+                position_1 -= delta;
+                _this.setState({ position: position_1 });
+            }, constants_1.BRAKING_DELAY);
+        }
+        else {
+            this._clearMovingInterval();
+        }
+    };
+    return Character;
+}(React.Component));
+exports.default = Character;
+
+
+/***/ }),
+/* 186 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MAX_SPEED = 400;
+exports.ACCELERATION = 40;
+exports.TOUCH_ACCELERATION = 5;
+exports.TOUCH_BRAKING = 5;
+exports.BRAKING_DELAY = 50;
+exports.KEY_PRESS_DELAY = 100;
+
 
 /***/ })
 /******/ ]);
